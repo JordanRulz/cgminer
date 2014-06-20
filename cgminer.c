@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <sys/endian.h>
 #include <time.h>
 #include <math.h>
 #include <stdarg.h>
@@ -2340,7 +2341,7 @@ static uint64_t share_diff(const struct work *work)
 		data64 = (uint64_t *)(rhash + 2);
 	else
 		data64 = (uint64_t *)(rhash + 4);
-	d64 = be64toh(*data64);
+	d64 = betoh64(*data64);
 	if (unlikely(!d64))
 		d64 = 1;
 	ret = diffone / d64;
@@ -2592,7 +2593,7 @@ static void calc_diff(struct work *work, int known)
 
 		swab256(rtarget, work->target);
 		data64 = (uint64_t *)(rtarget + 2);
-		d64 = be64toh(*data64);
+		d64 = betoh64(*data64);
 		if (unlikely(!d64))
 			d64 = 1;
 		work->work_difficulty = diffone / d64;
@@ -2917,7 +2918,7 @@ static void roll_work(struct work *work)
 	uint32_t ntime;
 
 	work_ntime = (uint32_t *)(work->data + 68);
-	ntime = be32toh(*work_ntime);
+	ntime = betoh32(*work_ntime);
 	ntime++;
 	*work_ntime = htobe32(ntime);
 	local_work++;
@@ -3465,7 +3466,7 @@ static void set_blockdiff(const struct work *work)
 		data64 = (uint64_t *)(rhash + 2);
 	else
 		data64 = (uint64_t *)(rhash + 4);
-	d64 = be64toh(*data64);
+	d64 = betoh64(*data64);
 	if (unlikely(!d64))
 		d64 = 1;
 
@@ -3578,7 +3579,7 @@ static void *stage_thread(void *userdata)
 	struct thr_info *mythr = userdata;
 	bool ok = true;
 
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	RenameThread("stage");
 
@@ -4321,7 +4322,7 @@ retry:
 
 static void *input_thread(void __maybe_unused *userdata)
 {
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	RenameThread("input");
 
@@ -4358,7 +4359,7 @@ static void *api_thread(void *userdata)
 	struct thr_info *mythr = userdata;
 
 	pthread_detach(pthread_self());
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	RenameThread("api");
 
@@ -5329,7 +5330,7 @@ void *miner_thread(void *userdata)
 	struct work *work;
 	const bool primary = (!mythr->device_thread) || mythr->primary_thread;
 
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	char threadname[20];
         snprintf(threadname,20,"miner %d",thr_id);
@@ -5738,7 +5739,7 @@ static void *watchpool_thread(void __maybe_unused *userdata)
 {
 	int intervals = 0;
 
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	RenameThread("watchpool");
 
@@ -5802,7 +5803,7 @@ static void *watchdog_thread(void __maybe_unused *userdata)
 	const unsigned int interval = WATCHDOG_INTERVAL;
 	struct timeval zero_tv;
 
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
 	RenameThread("watchdog");
 
